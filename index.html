@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Introducing Swisscoding Name Filter: a family of small, open models for detecting personal names in clinical text.">
+<meta name="author" content="Paul Roeseler, Aurélien Ferlay, Matteo Caliandro">
+<meta name="color-scheme" content="light">
+<title>Introducing Swisscoding Name Filter — Swisscoding Technologies</title>
+<style>
+/* Swisscoding website palette: navy #0A2448, teal #009FB7, and cool greys. Darker teal is used for readable small text. */
+:root{--paper:#FFFFFF;--ink:#0A2448;--muted:#4E5D6A;--line:#D9DDE1;--accent:#009FB7;--accent-text:#006F80;--wash:#E9ECEF;--mono:ui-monospace,SFMono-Regular,Consolas,monospace;--sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:36px}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.75 var(--sans);-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration-color:#738290;text-underline-offset:4px}a:hover{color:var(--accent-text)}a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:6px}::selection{background:#C6CDD2}.skip{position:absolute;top:-100px;padding:10px;background:var(--paper)}.skip:focus{top:8px;left:10px;z-index:5}.site-header{max-width:1240px;margin:auto;padding:29px 48px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);gap:20px}.wordmark{font-weight:650;letter-spacing:-1.3px;font-size:27px;text-decoration:none}.header-label{font:11px/1.3 var(--mono);letter-spacing:1.6px;margin-left:25px;color:var(--muted)}.header-right{font-size:13px;display:flex;gap:25px;align-items:center}.preview-status{color:var(--muted)}.masthead{max-width:1144px;margin:0 auto;padding:74px 0 0}.eyebrow{font:11px/1.5 var(--mono);letter-spacing:1.4px;color:var(--muted)}.kicker{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding-bottom:17px}.kicker .eyebrow:first-child{color:var(--accent-text)}h1{font-size:clamp(50px,6.3vw,87px);font-weight:450;line-height:1.07;letter-spacing:-4.3px;margin:32px 0 24px;max-width:1100px}.intro-word{display:block;color:var(--muted);font-size:.48em;letter-spacing:-1.7px;margin-bottom:13px}.subtitle{font-size:25px;line-height:1.5;letter-spacing:-.5px;max-width:810px;margin:0 0 25px}.byline{font-size:13px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 35px}.byline span{color:var(--muted)}.top-links{display:flex;gap:30px;font-size:13px;margin-bottom:48px}.top-links a{font-weight:550;text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:5px}.specs{display:grid;grid-template-columns:1fr 1fr 1.5fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:0;padding:26px 0 30px}.specs div{display:flex;flex-direction:column;padding:0 30px;border-left:1px solid var(--line)}.specs div:first-child{padding-left:0;border-left:0}.specs dt{order:2;font-size:12px;color:var(--muted);margin-top:9px}.specs dd{font-size:37px;line-height:1.2;letter-spacing:-1.3px;margin:0;font-weight:450}.specs small{font-size:16px;letter-spacing:-.2px}.reading{max-width:1144px;margin:64px auto 0;display:grid;grid-template-columns:194px minmax(0,1fr);gap:48px}.contents{align-self:start;position:sticky;top:28px;font-size:12px;line-height:1.5}.contents .eyebrow{display:block;margin-bottom:19px}.contents ol{list-style:none;padding:0;margin:0}.contents li{margin:0 0 15px}.contents a{text-decoration:none;color:var(--muted)}.contents a:hover{color:var(--ink)}.contents .small-note{padding-top:25px;border-top:1px solid var(--line);margin-top:26px;font-size:11px;line-height:1.6;color:var(--muted)}article{min-width:0;max-width:890px;padding-bottom:48px}article>p,article>ul,article>ol,article>h2,article>h3{max-width:760px}article>p:first-child{font-size:21px;line-height:1.65;letter-spacing:-.25px;margin-top:0}p{margin:0 0 23px}h2{font-size:30px;line-height:1.25;font-weight:530;letter-spacing:-.9px;margin:68px 0 22px;padding-top:26px;border-top:1px solid var(--line)}h3{font-size:20px;line-height:1.4;font-weight:560;letter-spacing:-.35px;margin:34px 0 17px}strong{font-weight:620}ul,ol{padding-left:22px;margin:0 0 25px}li{padding-left:4px;margin-bottom:10px}code{font:12px/1.6 var(--mono);padding:3px 5px;background:var(--wash);overflow-wrap:anywhere}pre{background:var(--wash);padding:24px;margin:25px 0;overflow:auto;border-left:2px solid #009FB7}pre code{font:12px/1.8 var(--mono);padding:0;overflow-wrap:normal}.table-scroll{overflow-x:auto;margin:28px 0 17px}table{border-collapse:collapse;width:100%;font-size:12px;line-height:1.65;font-variant-numeric:tabular-nums}th{text-align:left;vertical-align:bottom;color:var(--muted);font-size:11px;font-weight:500;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:13px 10px}td{padding:15px 10px;vertical-align:top;border-bottom:1px solid var(--line)}th:first-child,td:first-child{padding-left:0;min-width:205px}th:last-child,td:last-child{padding-right:0}th:not(:first-child),td:not(:first-child){text-align:right}td:has(strong){color:var(--ink)}p:has(>em:only-child){font-size:12px;line-height:1.7;color:var(--muted);max-width:none}em{font-style:normal}details{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:29px 0;padding:0}summary{font-size:13px;padding:18px 0;cursor:pointer}summary strong{font-weight:550}details[open]{padding-bottom:10px}details[open] summary{margin-bottom:12px}details p{font-size:14px;line-height:1.7}details .table-scroll{margin-top:15px}details pre{margin:20px 0}#references~ul{font-size:13px;line-height:1.7;overflow-wrap:anywhere}.site-footer{max-width:1144px;margin:0 auto 36px;border-top:1px solid var(--line);padding:24px 0;display:flex;justify-content:space-between;gap:20px;font-size:11px;color:var(--muted)}
+@media(min-width:1500px){.masthead,.reading,.site-footer{max-width:1144px}}
+@media(max-width:1240px){.masthead,.reading,.site-footer{margin-left:48px;margin-right:48px}.reading{grid-template-columns:155px minmax(0,1fr);gap:40px}}
+@media(max-width:900px){.contents{display:none}.reading{display:block;max-width:780px}.masthead,.reading,.site-footer{margin-left:32px;margin-right:32px}.site-header{padding:22px 32px}h1{letter-spacing:-3px}.subtitle{font-size:22px}article>p:first-child{font-size:19px}}
+@media(max-width:600px){body{font-size:16px;line-height:1.75}.site-header{padding:19px 22px}.wordmark{font-size:23px}.header-label{display:none}.header-right{font-size:12px}.preview-status{display:none}.masthead,.reading,.site-footer{margin-left:22px;margin-right:22px}.masthead{padding-top:40px}.kicker{gap:10px}.kicker .eyebrow{font-size:9px;letter-spacing:.7px}h1{font-size:46px;letter-spacing:-2px;line-height:1.1;margin:28px 0 22px}.intro-word{font-size:25px;letter-spacing:-.8px}.subtitle{font-size:20px;line-height:1.5}.byline{font-size:12px;margin-bottom:27px}.top-links{gap:24px;margin-bottom:35px}.specs{grid-template-columns:1fr 1fr;padding:23px 0;row-gap:25px}.specs div{padding:0 20px}.specs div:last-child{grid-column:1/-1;padding:20px 0 0;border-left:0;border-top:1px solid var(--line)}.specs dd{font-size:32px}.specs small{font-size:14px}.specs dt{font-size:11px}.reading{margin-top:38px}article>p:first-child{font-size:18px}h2{font-size:26px;margin-top:47px}h3{font-size:19px}th:first-child,td:first-child{min-width:165px}table{font-size:11px;min-width:520px}.site-footer{flex-direction:column;gap:8px}pre{padding:18px 13px}pre code{font-size:11px}}
+
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;font-size:10pt;color:#000}.site-header,.contents,.top-links,.skip{display:none}.masthead,.reading,.site-footer{margin:0;max-width:none}.masthead{padding:0}.reading{display:block;margin-top:30px}article{max-width:none}h1{font-size:42pt}h2{break-after:avoid;font-size:21pt}pre,table{break-inside:avoid}.table-scroll{overflow:visible}details{display:block}details> :not(summary){display:block!important}.site-footer{margin-top:30px}a{color:inherit}a[href^="https://"]{text-decoration:none}}
+
+/* Prominent Swisscoding branding, using the website's navy and teal. */
+.header-band,.hero-band{background:#0A2448;color:#FFFFFF}
+.header-band .site-header{border-color:#FFFFFF33}
+.header-band .wordmark,.header-band .header-right a{color:#FFFFFF}
+.header-band .header-label,.header-band .preview-status{color:#C6CDD2}
+.header-band a:hover{color:#009FB7}
+.hero-band{padding-bottom:46px}
+.hero-band .masthead{padding-top:56px}
+.hero-band .kicker{border-color:#FFFFFF33}
+.hero-band .kicker .eyebrow{color:#C6CDD2}
+.hero-band .kicker .eyebrow:first-child{color:#009FB7}
+.hero-band h1{color:#FFFFFF}
+.hero-band .title-accent{color:#009FB7}
+.hero-band .intro-word,.hero-band .subtitle,.hero-band .byline span{color:#C6CDD2}
+.hero-band .byline strong{color:#FFFFFF}
+.hero-band .top-links a{color:#FFFFFF;border-bottom:2px solid #009FB7}
+.hero-band .top-links a:hover{color:#009FB7}
+.hero-band .specs,.hero-band .specs div{border-color:#FFFFFF33}
+.hero-band .specs dd{color:#009FB7}
+.hero-band .specs dt,.hero-band .specs small{color:#C6CDD2}
+
+article h2{border-top-color:#C6CDD2}
+.case-list{list-style:decimal;padding-left:25px;margin:26px 0 24px}
+.case-list>li{padding:17px 0 18px 5px;margin:0;border-top:1px solid var(--line)}
+.case-list>li:last-child{border-bottom:1px solid var(--line)}
+.case-list>li::marker{color:var(--accent-text);font:600 13px var(--mono)}
+.case-list p{margin:0 0 8px}
+.case-list p:last-child{margin-bottom:0}
+.case-list .case-meta{font:11px/1.7 var(--mono);color:var(--muted);overflow-wrap:anywhere}.sample-evidence{max-width:760px;margin:14px 0 0}.sample-evidence summary{font-size:12px;padding:11px 0}.sample-evidence pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0;font-size:12px}.sample-evidence p{font-size:11px;overflow-wrap:anywhere}
+.case-link-note{font-size:12px;line-height:1.7;color:var(--muted)}
+@media(max-width:600px){.hero-band{padding-bottom:30px}.hero-band .masthead{padding-top:34px}.hero-band .specs div:last-child{border-color:#FFFFFF33}}
+@media print{.header-band{display:none}.hero-band{background:white;color:#0A2448;padding-bottom:0}.hero-band .masthead{padding-top:0}.hero-band h1,.hero-band .title-accent,.hero-band .intro-word,.hero-band .subtitle,.hero-band .byline strong,.hero-band .byline span,.hero-band .specs dd,.hero-band .specs dt,.hero-band .specs small{color:#0A2448}.hero-band .specs,.hero-band .specs div,.hero-band .kicker{border-color:#C6CDD2}.case-list>li{break-inside:avoid}}
+.prose-table th,.prose-table td{text-align:left}
+.prose-table th:first-child,.prose-table td:first-child{min-width:130px}
+article h4{font-size:17px;line-height:1.4;font-weight:600;margin:30px 0 12px}article h4+.table-scroll{margin-top:12px}
+#evaluation~.table-scroll{max-width:760px}
+
+
+
+
+</style>
+</head>
+<body>
+<a class="skip" href="#report">Skip to report</a>
+<div class="header-band"><header class="site-header"><div><a class="wordmark" href="#top">swisscoding</a><span class="header-label">RESEARCH</span></div><div class="header-right"><span class="preview-status">Release preview</span><a href="https://github.com/swisscoding-labs/swisscoding-name-filter">Repository ↗</a></div></header></div>
+<main id="top">
+<div class="hero-band"><section class="masthead" aria-labelledby="release-title">
+<div class="kicker"><span class="eyebrow">MODEL RELEASE / NAME DETECTION</span><span class="eyebrow">25 SEP 2026</span></div>
+<h1 id="release-title"><span class="intro-word">Introducing</span>Swisscoding <span class="title-accent">Name Filter</span></h1>
+<p class="subtitle">A family of small, open models for detecting personal names in clinical text.</p>
+<p class="byline"><strong>Paul Roeseler, Aurélien Ferlay, Matteo Caliandro</strong><span>·</span><span>September 25, 2026</span></p>
+<nav class="top-links" aria-label="Release links"><a href="#evaluation">Explore the results ↓</a><a href="#how-we-built-it">Training approach ↓</a></nav>
+<dl class="specs"><div><dt>Parameters</dt><dd>149 <small>million</small></dd></div><div><dt>English · German · French · Italian</dt><dd>4 <small>languages</small></dd></div><div><dt>Maximum pipeline context length</dt><dd>8,192 <small>tokens</small></dd></div></dl>
+</section></div>
+<div class="reading"><aside class="contents" aria-label="On this page"><span class="eyebrow">IN THIS REPORT</span><ol><li><a href="#why-focus-on-names">01 &nbsp; Motivation</a></li><li><a href="#what-the-model-detects">02 &nbsp; Model scope</a></li><li><a href="#how-we-built-it">03 &nbsp; Training approach</a></li><li><a href="#evaluation">04 &nbsp; Evaluation</a></li><li><a href="#references">05 &nbsp; References</a></li></ol><p class="small-note">EN / DE / FR / IT<br>ModernBERT-base<br>Token classification</p></aside><article id="report">
+<p>We are releasing Swisscoding Name Filter, a family of models focused on detecting personal names in clinical documents. The release includes individual models for English, German, French, and Italian, alongside one multilingual model covering all four languages.</p>
+<p>In our local evaluation on the MultiGraSCCo dataset, the multilingual model achieved 97.92% precision, 98.76% recall, and 98.34% F1 across 252 document versions.</p>
+<p>The goal is practical: create a name detection model that works on realistic clinical documents and is small enough to be deployed within a hospital&#x27;s own CPU-based infrastructure.</p>
+<h2 id="why-focus-on-names">01 &nbsp; Motivation</h2>
+<p>The open-source PII landscape can look almost solved from public leaderboards. Many recent models report strong results across dozens of PII categories, often across multiple languages.</p>
+<p>In our evaluation on realistic multilingual clinical documentation, many of these models had insufficient recall for personal names to be suitable for our intended use.</p>
+<p>We think two things are happening.</p>
+<ul>
+<li>First, much of the public training and evaluation data is synthetic in ways that make the task easier than production de-identification. The model learns formatting artifacts, placeholder conventions, and repeated templates instead of learning to distinguish a person&#x27;s name from the surrounding clinical text.</li>
+<li>Second, there is no free lunch in a single model that detects 50 or more PII categories across many languages. Detecting telephone numbers, social security numbers, addresses, and many other categories may compete with recognizing ambiguous personal names for the model&#x27;s limited capacity.</li>
+</ul>
+<p>So we started with one question: what if we made a small model that does one thing well?</p>
+<h2 id="what-the-model-detects">02 &nbsp; Model scope</h2>
+<p>Swisscoding Name Filter is a bidirectional token classifier with two labels:</p>
+<div class="table-scroll"><table class="prose-table"><thead><tr><th>Label</th><th>Meaning</th></tr></thead><tbody><tr><td>PERSON</td><td>A token that is part of a private person&#x27;s name</td></tr>
+<tr><td>O</td><td>Any token that is not part of a private person&#x27;s name</td></tr></tbody></table></div>
+<p>The model is based on ModernBERT-base, which has 22 layers and about 149 million parameters. The model can run locally on ordinary CPU servers. Sensitive text does not need to leave the hospital environment just to be screened for names.</p>
+<h2 id="how-we-built-it">03 &nbsp; Training approach</h2>
+<h3>1. Start with de-identified real clinical documents</h3>
+<p>We use 30,000 medical documents in German, French, and Italian from which personal information has already been removed.</p>
+<h3>2. Insert structured placeholders</h3>
+<p>We insert placeholders for personal information at contextually appropriate positions with Qwen3.5-122B-A10B. These placeholders identify the locations where synthetic values will be inserted, enabling labels to be derived from the replacements.</p>
+<h3>3. Translate into four languages</h3>
+<p>We generate English, German, French, and Italian versions using Qwen3.5-122B-A10B, choosing the translation direction based on the source language. This produces approximately 30,000 examples per language.</p>
+<h3>4. Expand each document with multiple personas</h3>
+<p>For each document, we replace the placeholders with different synthetic personas. The inserted names vary: surnames alone, full names with or without middle names, names with initials, and names with spelling errors. We also account for related information, such as names in email addresses.</p>
+<div class="table-scroll"><table class="prose-table"><thead><tr><th>Stage</th><th>Illustrative text</th></tr></thead><tbody><tr><td>Placeholder</td><td>{{PATIENT_NAME}} was referred by Dr. {{CLINICIAN_NAME}}.</td></tr>
+<tr><td>Persona A</td><td>Nora Keller was referred by Dr. Elias Meier.</td></tr>
+<tr><td>Persona B</td><td>Moretti was referred by Dr. Romano.</td></tr>
+<tr><td>Persona C</td><td>Camille Laurent was referred by Dr. Martin.</td></tr></tbody></table></div>
+<h3 id="synthetic-data">Why we did not rely on fully synthetic source documents</h3>
+<p>Fully synthetic documents are often too simple and repetitive to represent the complexity of clinical records. Our inspection also found substantial data and annotation quality problems, illustrated by the four traceable examples below.</p>
+<p>We inspected source_text, target_text, and privacy_mask in ai4privacy&#x27;s <a href="https://huggingface.co/datasets/ai4privacy/pii-masking-300k/commit/c8c77895a005822682b66ab547fc0422579bc1d3">PII-Masking-300k dataset at commit c8c77895a005822682b66ab547fc0422579bc1d3</a>, and text and spans in NVIDIA&#x27;s <a href="https://huggingface.co/datasets/nvidia/Nemotron-PII/commit/b70ffaf5ff39e079776134c5bf4381f00a9fd1ed">Nemotron-PII dataset at commit b70ffaf5ff39e079776134c5bf4381f00a9fd1ed</a>. The four records below were selected to illustrate distinct failure modes. Each quote is an exact fragment of the corresponding source text. Expand each example to inspect its quoted source text and relevant labels. For ai4privacy, each displayed ID is the value of that record&#x27;s <code>id</code> field in PII-Masking-300k. The source file and line used to verify it are in the expanded evidence.</p>
+<h3 id="dataset-inspection">Four traceable dataset examples</h3>
+<ol class="case-list">
+<li value="1"><p><strong>A missing-value marker is labeled as a name.</strong></p><p class="case-meta">ai4privacy PII-Masking-300k · English · validation · record ID 40834B</p><p>The source says Heir N/A N/A. The two N/A spans, [174,177) and [178,181), are labeled GIVENNAME1 and LASTNAME1.</p><details class="sample-evidence"><summary>Inspect cited sample and labels</summary><pre><code>source_text excerpt:
+- **Name:** Heir N/A N/A
+
+privacy_mask:
+{&quot;value&quot;: &quot;N/A&quot;, &quot;start&quot;: 174, &quot;end&quot;: 177, &quot;label&quot;: &quot;GIVENNAME1&quot;}
+{&quot;value&quot;: &quot;N/A&quot;, &quot;start&quot;: 178, &quot;end&quot;: 181, &quot;label&quot;: &quot;LASTNAME1&quot;}</code></pre><p><a href="https://huggingface.co/datasets/ai4privacy/pii-masking-300k/resolve/c8c77895a005822682b66ab547fc0422579bc1d3/data/validation/1english_openpii_8k.jsonl">Download complete source file</a> · data/validation/1english_openpii_8k.jsonl · line 51 (one-based)</p></details></li>
+<li value="2"><p><strong>A person&#x27;s name receives a birth-date label.</strong></p><p class="case-meta">ai4privacy PII-Masking-300k · English · train · record ID 50803B</p><p>The source lists Mathangi followed by the birth date 13th June 2004. Both Mathangi at [263,271) and the date at [298,312) are labeled BOD in privacy_mask.</p><details class="sample-evidence"><summary>Inspect cited sample and labels</summary><pre><code>source_text excerpt:
+2. **Mathangi**
+   - **Date of Birth:** 13th June 2004
+
+privacy_mask:
+{&quot;value&quot;: &quot;Mathangi&quot;, &quot;start&quot;: 263, &quot;end&quot;: 271, &quot;label&quot;: &quot;BOD&quot;}
+{&quot;value&quot;: &quot;13th June 2004&quot;, &quot;start&quot;: 298, &quot;end&quot;: 312, &quot;label&quot;: &quot;BOD&quot;}</code></pre><p><a href="https://huggingface.co/datasets/ai4privacy/pii-masking-300k/resolve/c8c77895a005822682b66ab547fc0422579bc1d3/data/train/1english_openpii_30k.jsonl">Download complete source file</a> · data/train/1english_openpii_30k.jsonl · line 23,297 (one-based)</p></details></li>
+<li value="3"><p><strong>Name spans overlap and cross a JSON field boundary.</strong></p><p class="case-meta">ai4privacy PII-Masking-300k · French · train · record ID 1302B</p><p>The source includes &quot;full_name&quot;:&quot;Noëlle Shanuga Henseler&quot;. Its GIVENNAME1 span [160,187) covers the full name and trailing JSON punctuation, while the stored annotation value contains GIVENNAME2_A(, which is absent from that source span. The GIVENNAME2 and LASTNAME1 spans overlap; the latter reaches into the next sex field.</p><details class="sample-evidence"><summary>Inspect cited sample and labels</summary><pre><code>source_text excerpt:
+&quot;full_name&quot;:&quot;Noëlle Shanuga Henseler&quot;,
+               &quot;sex&quot;:&quot;F&quot;
+
+privacy_mask:
+{&quot;value&quot;: &quot;Noëlle GIVENNAME2_A(Shanuga&quot;, &quot;start&quot;: 160, &quot;end&quot;: 187, &quot;label&quot;: &quot;GIVENNAME1&quot;}
+{&quot;value&quot;: &quot;Shanuga LASTNAME1_A(Henseler&quot;, &quot;start&quot;: 167, &quot;end&quot;: 195, &quot;label&quot;: &quot;GIVENNAME2&quot;}
+{&quot;value&quot;: &quot;Henseler\&quot;,\n               \&quot;sex\&quot;:\&quot;SEX_A(F&quot;, &quot;start&quot;: 175, &quot;end&quot;: 215, &quot;label&quot;: &quot;LASTNAME1&quot;}</code></pre><p><a href="https://huggingface.co/datasets/ai4privacy/pii-masking-300k/resolve/c8c77895a005822682b66ab547fc0422579bc1d3/data/train/french_openpii_31k.jsonl">Download complete source file</a> · data/train/french_openpii_31k.jsonl · line 2,952 (one-based)</p></details></li>
+<li value="4"><p><strong>An unresolved field token is labeled as a first name.</strong></p><p class="case-meta">NVIDIA Nemotron-PII · test · uid 67c8d4a2907f49d694090649bcda15b5 · locale us · <a href="https://huggingface.co/datasets/nvidia/Nemotron-PII/viewer/default/test?p=39&amp;row=3937">view row 3,937 in Hugging Face</a></p><p>The source contains the literal token medical_record_number. The entire span [346,367) is labeled first_name, although it is a field marker rather than a person&#x27;s name.</p><details class="sample-evidence"><summary>Inspect cited sample and labels</summary><pre><code>text excerpt:
+The medical_record_number is required to verify my identity.
+
+spans:
+{&quot;start&quot;: 346, &quot;end&quot;: 367, &quot;text&quot;: &quot;medical_record_number&quot;, &quot;label&quot;: &quot;first_name&quot;}</code></pre></details></li>
+</ol>
+<p class="case-link-note">The Nemotron viewer link opens the current dataset revision. The UID and pinned commit above identify the record we inspected.</p>
+<h2 id="evaluation">04 &nbsp; Evaluation</h2>
+<p>We evaluated name detection primarily on MultiGraSCCo, which is derived from extensively altered clinical texts. Its annotations originate from manually labeled German source documents. We also evaluated the models on Nemotron PII as an additional synthetic benchmark.</p>
+<p>All scores below are percentages. The tables report Precision, Recall, and F1 where available.</p>
+
+<h3 id="multigrascco-multilingual-results">MultiGraSCCo: multilingual results</h3>
+<p>Combined German, French, Italian, and English results across 252 document versions.</p>
+<div class="table-scroll"><table>
+<thead><tr><th align="left">Model</th><th align="right">Precision</th><th align="right">Recall</th><th align="right">F1</th></tr></thead>
+<tbody><tr>
+<td align="left"><a href="https://huggingface.co/Swisscoding-Technologies/pii-name-filter-149M">Swisscoding Name Filter · multilingual</a></td>
+<td align="right"><strong>97.92</strong></td>
+<td align="right"><strong>98.76</strong></td>
+<td align="right"><strong>98.34</strong></td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/OpenMed/OpenMed-PII-SuperClinical-Large-434M-v1">OpenMed SuperClinical Large</a></td>
+<td align="right">93.85</td>
+<td align="right">84.36</td>
+<td align="right">88.85</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/openai/privacy-filter">OpenAI Privacy Filter</a></td>
+<td align="right">79.47</td>
+<td align="right">71.19</td>
+<td align="right">75.10</td>
+</tr></tbody></table></div>
+<p><em>For OpenMed, we combined token predictions for <code>first_name</code> and <code>last_name</code> into one name category before calculating Precision, Recall, and F1. We evaluated the MultiGraSCCo scores for OpenMed and Privacy Filter locally; they are not official results published by the respective organizations.</em></p>
+<h3 id="multigrascco-results-by-language">MultiGraSCCo: results by language</h3>
+<p>Each table uses all available documents in the named language and includes the corresponding monolingual model, the multilingual model, and the baseline models. The Swisscoding models use a 0.5 decision threshold.</p>
+<h4 id="multigrascco-english">English</h4>
+<div class="table-scroll"><table>
+<thead><tr><th align="left">Model</th><th align="right">Precision</th><th align="right">Recall</th><th align="right">F1</th></tr></thead>
+<tbody><tr>
+<td align="left"><a href="https://huggingface.co/Swisscoding-Technologies/pii-EN-name-filter-149M">Swisscoding Name Filter · English</a></td>
+<td align="right"><strong>100.00</strong></td>
+<td align="right"><strong>99.72</strong></td>
+<td align="right"><strong>99.86</strong></td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/Swisscoding-Technologies/pii-name-filter-149M">Swisscoding Name Filter · multilingual</a></td>
+<td align="right"><strong>100.00</strong></td>
+<td align="right">99.16</td>
+<td align="right">99.58</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/OpenMed/OpenMed-PII-SuperClinical-Large-434M-v1">OpenMed SuperClinical Large</a></td>
+<td align="right">98.39</td>
+<td align="right">94.82</td>
+<td align="right">96.57</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/openai/privacy-filter">OpenAI Privacy Filter</a></td>
+<td align="right">97.73</td>
+<td align="right">90.15</td>
+<td align="right">93.79</td>
+</tr></tbody></table></div>
+<h4 id="multigrascco-german">German</h4>
+<div class="table-scroll"><table>
+<thead><tr><th align="left">Model</th><th align="right">Precision</th><th align="right">Recall</th><th align="right">F1</th></tr></thead>
+<tbody><tr>
+<td align="left"><a href="https://huggingface.co/Swisscoding-Technologies/pii-DE-name-filter-149M">Swisscoding Name Filter · German</a></td>
+<td align="right">97.20</td>
+<td align="right">99.10</td>
+<td align="right"><strong>98.14</strong></td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/Swisscoding-Technologies/pii-name-filter-149M">Swisscoding Name Filter · multilingual</a></td>
+<td align="right">96.92</td>
+<td align="right"><strong>99.40</strong></td>
+<td align="right"><strong>98.14</strong></td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/OpenMed/OpenMed-PII-German-SuperClinical-Large-434M-v1">OpenMed German SuperClinical Large</a></td>
+<td align="right"><strong>98.07</strong></td>
+<td align="right">56.36</td>
+<td align="right">71.58</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/OpenMed/OpenMed-PII-SuperClinical-Large-434M-v1">OpenMed SuperClinical Large</a></td>
+<td align="right">93.13</td>
+<td align="right">75.35</td>
+<td align="right">83.31</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/openai/privacy-filter">OpenAI Privacy Filter</a></td>
+<td align="right">68.35</td>
+<td align="right">66.03</td>
+<td align="right">67.17</td>
+</tr></tbody></table></div>
+<h4 id="multigrascco-french">French</h4>
+<div class="table-scroll"><table>
+<thead><tr><th align="left">Model</th><th align="right">Precision</th><th align="right">Recall</th><th align="right">F1</th></tr></thead>
+<tbody><tr>
+<td align="left"><a href="https://huggingface.co/Swisscoding-Technologies/pii-FR-name-filter-149M">Swisscoding Name Filter · French</a></td>
+<td align="right"><strong>99.35</strong></td>
+<td align="right"><strong>97.68</strong></td>
+<td align="right"><strong>98.51</strong></td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/Swisscoding-Technologies/pii-name-filter-149M">Swisscoding Name Filter · multilingual</a></td>
+<td align="right">97.43</td>
+<td align="right">97.04</td>
+<td align="right">97.24</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/OpenMed/OpenMed-PII-French-SuperClinical-Large-434M-v1">OpenMed French SuperClinical Large</a></td>
+<td align="right">97.21</td>
+<td align="right">44.59</td>
+<td align="right">61.13</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/OpenMed/OpenMed-PII-SuperClinical-Large-434M-v1">OpenMed SuperClinical Large</a></td>
+<td align="right">93.30</td>
+<td align="right">85.91</td>
+<td align="right">89.45</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/openai/privacy-filter">OpenAI Privacy Filter</a></td>
+<td align="right">78.87</td>
+<td align="right">67.37</td>
+<td align="right">72.67</td>
+</tr></tbody></table></div>
+<h4 id="multigrascco-italian">Italian</h4>
+<div class="table-scroll"><table>
+<thead><tr><th align="left">Model</th><th align="right">Precision</th><th align="right">Recall</th><th align="right">F1</th></tr></thead>
+<tbody><tr>
+<td align="left"><a href="https://huggingface.co/Swisscoding-Technologies/pii-IT-name-filter-149M">Swisscoding Name Filter · Italian</a></td>
+<td align="right">96.90</td>
+<td align="right"><strong>99.59</strong></td>
+<td align="right">98.23</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/Swisscoding-Technologies/pii-name-filter-149M">Swisscoding Name Filter · multilingual</a></td>
+<td align="right"><strong>98.31</strong></td>
+<td align="right"><strong>99.59</strong></td>
+<td align="right"><strong>98.95</strong></td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/OpenMed/OpenMed-PII-Italian-SuperClinical-Large-434M-v1">OpenMed Italian SuperClinical Large</a></td>
+<td align="right">95.22</td>
+<td align="right">35.14</td>
+<td align="right">51.34</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/OpenMed/OpenMed-PII-SuperClinical-Large-434M-v1">OpenMed SuperClinical Large</a></td>
+<td align="right">91.65</td>
+<td align="right">86.43</td>
+<td align="right">88.97</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/openai/privacy-filter">OpenAI Privacy Filter</a></td>
+<td align="right">81.16</td>
+<td align="right">68.55</td>
+<td align="right">74.32</td>
+</tr></tbody></table></div>
+<p><em>For OpenMed, we combined token predictions for <code>first_name</code> and <code>last_name</code> into one name category before calculating Precision, Recall, and F1. We evaluated the MultiGraSCCo scores for OpenMed and Privacy Filter locally; they are not official results published by the respective organizations.</em></p>
+<h3 id="nemotron-pii">Nemotron PII: evaluation results</h3>
+<p>We evaluated the English and multilingual Swisscoding Name Filter models on the complete Nemotron PII test split: 100,000 records, comprising 50,000 US and 50,000 international records. NVIDIA describes Nemotron PII as an English-language dataset; US and international refer to locale conventions, not document languages. The multilingual model&#x27;s Nemotron score therefore measures performance on English text. Only the Swisscoding rows below come from our evaluation of the full test split.</p>
+<div class="table-scroll"><table>
+<thead><tr><th align="left">Model</th><th align="right">Precision</th><th align="right">Recall</th><th align="right">F1</th></tr></thead>
+<tbody><tr>
+<td align="left"><a href="https://huggingface.co/Swisscoding-Technologies/pii-EN-name-filter-149M">Swisscoding Name Filter · English</a></td>
+<td align="right"><strong>94.56</strong></td>
+<td align="right"><strong>99.70</strong></td>
+<td align="right"><strong>97.06</strong></td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/Swisscoding-Technologies/pii-name-filter-149M">Swisscoding Name Filter · multilingual</a></td>
+<td align="right">93.94</td>
+<td align="right">99.58</td>
+<td align="right">96.68</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/OpenMed/OpenMed-PII-SuperClinical-Large-434M-v1">OpenMed · first_name</a></td>
+<td align="right">99.48</td>
+<td align="right">99.51</td>
+<td align="right">99.50</td>
+</tr>
+<tr>
+<td align="left"><a href="https://huggingface.co/OpenMed/OpenMed-PII-SuperClinical-Large-434M-v1">OpenMed · last_name</a></td>
+<td align="right">99.42</td>
+<td align="right">99.29</td>
+<td align="right">99.35</td>
+</tr>
+</tbody></table></div>
+<p><em>The Swisscoding rows are from our local evaluation of token-level name detection on the full Nemotron PII test split. Each token is classified as <code>PERSON</code> (part of a private person&#x27;s name) or <code>O</code> (other text). Precision, Recall, and F1 use a 0.5 threshold. This table does not include span-level scores.</em></p>
+<p><em>The OpenMed <code>first_name</code> and <code>last_name</code> values come directly from OpenMed&#x27;s <a href="https://huggingface.co/OpenMed/OpenMed-PII-SuperClinical-Large-434M-v1/blob/df7af994d39d358e52f929ff1b3a40d894adf022/eval_results.json">published evaluation results</a>, not our 100,000-record run. We did not evaluate OpenMed on our full Nemotron test split. Its evaluation set and label definitions differ from ours, so these numbers are presented only as external reference results.</em></p>
+<h2 id="references">05 &nbsp; References</h2>
+<ul>
+<li>Swisscoding Technologies, model release pages (model details and downloads): <a href="https://huggingface.co/Swisscoding-Technologies/pii-name-filter-149M">multilingual</a>, <a href="https://huggingface.co/Swisscoding-Technologies/pii-EN-name-filter-149M">English</a>, <a href="https://huggingface.co/Swisscoding-Technologies/pii-DE-name-filter-149M">German</a>, <a href="https://huggingface.co/Swisscoding-Technologies/pii-FR-name-filter-149M">French</a>, and <a href="https://huggingface.co/Swisscoding-Technologies/pii-IT-name-filter-149M">Italian</a></li>
+<li>OpenAI, <a href="https://openai.com/index/introducing-openai-privacy-filter/">Introducing OpenAI Privacy Filter</a></li>
+<li>Answer.AI, <a href="https://huggingface.co/answerdotai/ModernBERT-base">ModernBERT-base model card</a></li>
+<li>Warner et al., <a href="https://arxiv.org/abs/2412.13663">Smarter, Better, Faster, Longer: A Modern Bidirectional Encoder for Fast, Memory Efficient, and Long Context Finetuning and Inference</a></li>
+<li>Baroud et al., <a href="https://arxiv.org/abs/2603.08879">MultiGraSCCo: A Multilingual Anonymization Benchmark with Annotations of Personal Identifiers</a></li>
+<li>Edin et al., <a href="https://arxiv.org/abs/2603.29709">Symphony for Medical Coding: A Next-Generation Agentic System for Scalable and Explainable Medical Coding</a></li>
+<li>ai4privacy, <a href="https://huggingface.co/datasets/ai4privacy/pii-masking-300k/commit/c8c77895a005822682b66ab547fc0422579bc1d3">PII-Masking-300k dataset snapshot</a> and <a href="https://huggingface.co/datasets/ai4privacy/pii-masking-300k/blob/c8c77895a005822682b66ab547fc0422579bc1d3/LICENSE.md">dataset license</a></li>
+<li>NVIDIA, <a href="https://huggingface.co/datasets/nvidia/Nemotron-PII/commit/b70ffaf5ff39e079776134c5bf4381f00a9fd1ed">Nemotron-PII dataset snapshot</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)</li>
+<li>OpenMed, <a href="https://huggingface.co/OpenMed/OpenMed-PII-SuperClinical-Large-434M-v1/blob/df7af994d39d358e52f929ff1b3a40d894adf022/eval_results.json">OpenMed PII per-label evaluation results</a></li>
+</ul>
+</article></div>
+</main>
+<footer class="site-footer"><span>Swisscoding Technologies · Research</span><span>Swisscoding Name Filter / Release preview</span></footer>
+</body>
+</html>
